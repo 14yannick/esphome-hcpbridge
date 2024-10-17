@@ -8,16 +8,16 @@ namespace esphome
 {
   namespace hcpbridge
   {
-    class HCPBridgeSwitch : public switch_::Switch, public PollingComponent
+    class HCPBridgeSwitch : public switch_::Switch, public Component
     {
       public:
         void set_hcpbridge_parent(HCPBridge *parent) { this->parent_ = parent; }
-        void update() override;
+        void setup() override;
+        void on_event_triggered();
         void write_state(bool state) override;
-
+        bool previousState_ = false;
       private:
         HCPBridge *parent_;
-        bool previousState_ = false;
     };
   }
 }

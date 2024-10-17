@@ -7,7 +7,11 @@ namespace hcpbridge
 
 static const char *const TAG = "hcpbridge.binary_sensor";
 
-void HCPBridgeRelaySensor::update() {
+void HCPBridgeRelaySensor::setup() {
+    this->parent_->add_on_state_callback([this]() { this->on_event_triggered(); });
+}
+
+void HCPBridgeRelaySensor::on_event_triggered() {
     if (this->parent_->engine->state->relayOn != this->previousState_){
         this->previousState_ = this->parent_->engine->state->relayOn;
 //        ESP_LOGD(TAG, "HCPBridgeBinarySensor::update() - %s", this->previousState_ ? "true" : "false");

@@ -10,7 +10,7 @@ from esphome.const import (
 CONF_RTS_PIN = "rts_pin"
 
 hcpbridge_ns = cg.esphome_ns.namespace("hcpbridge")
-HCPBridge = hcpbridge_ns.class_("HCPBridge", cg.Component)
+HCPBridge = hcpbridge_ns.class_("HCPBridge", cg.PollingComponent)
 
 CONF_HCPBridge_ID = "hcpbridge_id"
 

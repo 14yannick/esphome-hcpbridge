@@ -10,7 +10,7 @@ static const char *TAG = "hcpbridge.binary_output";
 void HCPBridgeBinaryOutput::write_state(bool state) {
   if (state != this->parent_->engine->state->lightOn) {
     ESP_LOGD(TAG, "HCPBridgeBinaryOutput::write_state() - turning light %s", state ? "true" : "false");
-    this->parent_->engine->turnLight(state);
+    //this->parent_->engine->turnLight(state);
   } 
 }
 

@@ -24,4 +24,3 @@ async def to_code(config):
 
     parent = await cg.get_variable(config[CONF_HCPBridge_ID])
     cg.add(var.set_hcpbridge_parent(parent))
-

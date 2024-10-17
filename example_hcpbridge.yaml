@@ -27,44 +27,23 @@ hcpbridge:
   tx_pin: 17 # optional, default=17
   #rts_pin : 1 # optional RTS pin to use if hardware automatic control flow is not available.
 
-cover:
-  - platform: hcpbridge
-    name: Garage Door
-    device_class: garage
-    id: garagedoor_cover
-
 output:
   - platform: hcpbridge
     id: output_light
 
 light:
   - platform: hcpbridge
+    id: gd_light
     output: output_light
-    id: light_1
     name: Garage Door Light
 
 button:
-  platform: hcpbridge
-  id: button_vent
-  name: "Garage Door Vent"
-
-text_sensor:
-  - platform: hcpbridge
-    id: sensor_templ_state
-    name: "Garage Door State"
-
-switch:
-  - platform: hcpbridge
-    id: switch_vent
-    name: "Venting"
-    restore_mode: disabled
-
-binary_sensor:
-  - platform: hcpbridge
-    name: "relay state"
-    id: sensor_relay
-    #on_state:
-    #create your automation based on relay state  
+  - platform: template
+    id: button_log
+    name: "Garage Door log"
+    on_press:
+      - lambda: |-
+          id(gd_light).updateState();
 
 api:
   encryption:

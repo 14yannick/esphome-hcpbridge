@@ -14,5 +14,14 @@ namespace esphome
       this->engine = &HoermannGarageEngine::getInstance();
       this->engine->setup(rx, tx, rts);
     }
+    void HCPBridge::add_on_state_callback(std::function<void()> &&callback){
+      this->state_callback_.add(std::move(callback)); 
+    }
+
+    void HCPBridge::update(){
+      if (this->engine->state->changed) {
+        this->state_callback_.call();
+      }
+    }
   }
 }

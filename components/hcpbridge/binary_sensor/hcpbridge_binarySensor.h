@@ -8,11 +8,12 @@ namespace esphome
 {
   namespace hcpbridge
   {
-    class HCPBridgeRelaySensor : public binary_sensor::BinarySensor, public PollingComponent
+    class HCPBridgeRelaySensor : public binary_sensor::BinarySensor, public Component
     {
       public:
         void set_hcpbridge_parent(HCPBridge *parent) { this->parent_ = parent; }
-        void update() override;
+        void setup() override;
+        void on_event_triggered();
         void dump_config() override;
       private:
         HCPBridge *parent_;

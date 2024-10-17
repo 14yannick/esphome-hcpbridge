@@ -5,9 +5,8 @@ from .. import hcpbridge_ns, CONF_HCPBridge_ID, HCPBridge
 
 DEPENDENCIES = ["hcpbridge"]
 
-HCPBridgeBinarySensor = hcpbridge_ns.class_("HCPBridgeBinarySensor", binary_sensor.BinarySensor, cg.PollingComponent)
 HCPBridgeIsConnected = hcpbridge_ns.class_("HCPBridgeIsConnected", binary_sensor.BinarySensor, cg.PollingComponent)
-HCPBridgeRelaySensor = hcpbridge_ns.class_("HCPBridgeRelaySensor", binary_sensor.BinarySensor, cg.PollingComponent)
+HCPBridgeRelaySensor = hcpbridge_ns.class_("HCPBridgeRelaySensor", binary_sensor.BinarySensor, cg.Component)
 
 CONF_IS_CONNECTED = "is_connected"
 CONF_RELAY_STATE = "relay_state"

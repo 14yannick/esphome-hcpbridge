@@ -7,8 +7,15 @@ namespace esphome
 
     static const char *const TAG = "hcpbridge.switch";
 
-    void HCPBridgeSwitch::update()
-    {
+    void HCPBridgeSwitch::setup() {
+        this->parent_->add_on_state_callback([this]() { this->on_event_triggered(); });
+    }
+
+    void HCPBridgeSwitch::on_event_triggered() {
+      if (this->parent_ == nullptr || this->parent_->engine == nullptr) {
+        ESP_LOGW(TAG, "HCPBridgeSwitch::update() - Engine or parent is null");
+        return;
+      }
       if (!this->parent_->engine->state->valid)
       {
         if (!this->status_has_warning())
@@ -23,38 +30,29 @@ namespace esphome
         ESP_LOGD(TAG, "HCPBridgeSwitch::update() - clearing warning");
         this->status_clear_warning();
       }
-      if (this->previousState_ != this->parent_->engine->state->state == HoermannState::VENT)
-      {
-        ESP_LOGD(TAG, "HCPBridgeSwitch::update() - state changed");
-        this->publish_state(this->parent_->engine->state->state == HoermannState::VENT);
-        this->previousState_ = this->parent_->engine->state->state == HoermannState::VENT;
+      bool is_venting = this->parent_->engine->state->state == HoermannState::State::VENT;
+
+      if (this->previousState_ != is_venting) {
+        ESP_LOGD(TAG, "HCPBridgeSwitch::update() - state changed to %s", is_venting ? "VENT" : "NOT VENT");
+        this->publish_state(is_venting);
+        this->previousState_ = is_venting;
       }
     }
 
-    void HCPBridgeSwitch::write_state(bool state)
-    {
-      if (state)
-      {
-        if (this->parent_->engine->state->state != HoermannState::VENT)
-        {
-          ESP_LOGD(TAG, "HCPBridgeSwitch::write_state() - set to vent");
+    void HCPBridgeSwitch::write_state(bool state) {
+      if (state) {
+        if (this->parent_->engine->state->state != HoermannState::State::VENT) {
+          ESP_LOGD(TAG, "HCPBridgeSwitch::write_state() - Setting door to vent");
           this->parent_->engine->ventilationPositionDoor();
-        }
-        else
-        {
+        } else {
           ESP_LOGD(TAG, "HCPBridgeSwitch::write_state() - Door already in vent state");
         }
-      }
-      else
-      {
-        if (this->parent_->engine->state->state != HoermannState::CLOSED)
-        {
-          ESP_LOGD(TAG, "HCPBridgeSwitch::write_state() - stop venting");
+      } else {
+        if (this->parent_->engine->state->state != HoermannState::State::CLOSED) {
+          ESP_LOGD(TAG, "HCPBridgeSwitch::write_state() - Closing door");
           this->parent_->engine->closeDoor();
-        }
-        else
-        {
-          ESP_LOGD(TAG, "HCPBridgeSwitch::write_state() - Door already in vent state");
+        } else {
+          ESP_LOGD(TAG, "HCPBridgeSwitch::write_state() - Door already closed");
         }
       }
     }

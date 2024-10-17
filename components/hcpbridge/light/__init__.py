@@ -6,7 +6,7 @@ from .. import hcpbridge_ns, CONF_HCPBridge_ID, HCPBridge
 
 DEPENDENCIES = ["hcpbridge"]
 
-HCPBridgeLight = hcpbridge_ns.class_("HCPBridgeLight", light.LightOutput, cg.PollingComponent)
+HCPBridgeLight = hcpbridge_ns.class_("HCPBridgeLight", light.LightOutput, cg.Component)
 
 CONFIG_SCHEMA = light.BINARY_LIGHT_SCHEMA.extend(
     {
@@ -16,13 +16,14 @@ CONFIG_SCHEMA = light.BINARY_LIGHT_SCHEMA.extend(
     }
 ).extend(cv.COMPONENT_SCHEMA)
 
-def to_code(config):
+async def to_code(config):
     light_output_var = cg.new_Pvariable(config[CONF_OUTPUT_ID])
-    yield light.register_light(light_output_var, config)
 
-    var = yield cg.get_variable(config[CONF_HCPBridge_ID])
-    out = yield cg.get_variable(config[CONF_OUTPUT])
+    out = await cg.get_variable(config[CONF_OUTPUT])
     cg.add(light_output_var.set_output(out))
-    parent = yield cg.get_variable(config[CONF_HCPBridge_ID])
+
+    parent = await cg.get_variable(config[CONF_HCPBridge_ID])
     cg.add(light_output_var.set_hcpbridge_parent(parent))
 
+    await cg.register_component(light_output_var, config)
+    await light.register_light(light_output_var, config)
