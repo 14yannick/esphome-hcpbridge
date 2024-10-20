@@ -105,34 +105,34 @@ text_sensor:
       std::string stateText;
       switch (id(garagedoor_cover).get_cover_state()) {
           case HoermannState::OPENING:
-            stateText = "opening";
+            stateText = "Opening";
             break;
           case HoermannState::MOVE_VENTING:
-            stateText = "move venting";
+            stateText = "Move venting";
             break;
           case HoermannState::MOVE_HALF:
-            stateText = "move half";
+            stateText = "Move half";
             break;
           case HoermannState::CLOSING:
-            stateText = "closing";
+            stateText = "Closing";
             break;
           case HoermannState::OPEN:
-            stateText = "open";
+            stateText = "Open";
             break;
           case HoermannState::CLOSED:
-            stateText = "closed";
+            stateText = "Closed";
             break;
           case HoermannState::STOPPED:
-            stateText = "stopped";
+            stateText = "Stopped";
             break;
           case HoermannState::HALFOPEN:
-            stateText = "half open";
+            stateText = "Half open";
             break;
           case HoermannState::VENT:
-            stateText = "venting";
+            stateText = "Venting";
             break;
           default:
-            stateText = "unknown";
+            stateText = "Unknown";
             break;
         }
       return {stateText};
