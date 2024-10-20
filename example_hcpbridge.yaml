@@ -141,7 +141,7 @@ text_sensor:
 switch:
   - platform: template
     id: switch_vent
-    name: "Venting"
+    name: "Garage Door Venting"
     lambda: |-
       return (id(garagedoor_cover).get_cover_state() == HoermannState::VENT);
     optimistic: True
