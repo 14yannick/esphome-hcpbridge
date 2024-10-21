@@ -35,9 +35,7 @@ esp32:
     type: arduino
 
 hcpbridge:
-  is_connected: # Sensor to display the connection status to the motor
-    name: "HCPBridge Connected"
-    id: hcpbridge_id
+  id: hcpbridge_id
   rx_pin: 18 # optional, default=18
   tx_pin: 17 # optional, default=17
   #rts_pin : 1 # optional RTS pin to use if hardware automatic control flow is not available.
@@ -49,46 +47,24 @@ cover:
     id: garagedoor_cover
 
 binary_sensor:
-  - platform: template
-    name: "Garage Door Light sensor"
-    internal: true 
-    device_class: light
-    id: sensor_light
-    lambda: !lambda |-
-      return (id(garagedoor_cover).get_light_state());
-    on_state:
-    #needed to correct the state fo the light  
-      if:
-        condition:
-          or:
-            - and:
-              - binary_sensor.is_on: sensor_light
-              - light.is_off: light_1
-            - and:
-              - binary_sensor.is_off: sensor_light
-              - light.is_on: light_1
-        then:
-          - light.toggle: light_1
-  - platform: template
-    name: "relay state"
-    id: sensor_relay
-    lambda: !lambda |-
-      return (id(garagedoor_cover).get_relay_state());
-    #on_state:
-    #create your automation based on relay state  
+  - platform: hcpbridge
+    is_connected:
+      name: "HCPBridge Connected"
+      id: sensor_connected
+    relay_state:
+      name: "Garage Door Relay state"
+      id: sensor_relay
+      #on_state:
+      #create your automation based on Garage Door Relay state
 
 output:
-  - platform: template
-    type: binary
+  - platform: hcpbridge
     id: output_light
-    write_action:
-      lambda: !lambda |-
-        id(garagedoor_cover).set_light_state(state);
 
 light:
-  - platform: binary
+  - platform: hcpbridge
+    id: gd_light
     output: output_light
-    id: light_1
     name: Garage Door Light
 
 # API to communicate with home assistant
@@ -112,6 +88,9 @@ api:
       then:
         - lambda: |-
             id(garagedoor_cover).on_go_to_vent();
+    - service: toggle
+      then:
+        - cover.toggle: garagedoor_cover
 
 # Enable OTA updates
 ota:
@@ -131,9 +110,38 @@ The component provides a cover component to control the garage door.
 
 The component provides a Light component to turn the light off and on.
 
+### Binary_Sensor
+
+The component provides you two sensor.
+
+- `is_connected`: Who indicated if there is a valid connection with the door.
+- `relay_state`: Give the status of the option relay (Menu 30) of the HCP.
+
+### Text_sensor
+
+This component provide you a detailed current state of the door. This text can be changed using the substitute functionality.
+```YAML
+text_sensor:
+  - platform: hcpbridge
+    id: sensor_templ_state
+    name: "Garage Door State"
+    filters:
+      - substitute:
+        - "Opening -> your text"
+        - "Move venting -> your text"
+        - "Move half -> your text"
+        - "Closing -> your text"
+        - "Open -> your text"
+        - "Closed -> your text"
+        - "Stopped -> your text"
+        - "Half open -> your text"
+        - "Venting -> your text"
+        - "Unknown -> your text"
+```
+
 ### Additional Components
 
-Information like the current position or the state of the option relay (Menu 30) can be added using Templates.
+There is also a simple button and switch component for convenience for Automation.
 Check out the [example_hcpbridge.yaml](./example_hcpbridge.yaml) for some implementations.
 
 
@@ -145,6 +153,7 @@ Additionally, when using the cover component, you can use the following services
 - `esphome.hcpbridge_go_to_half`: To move the garage door to half position
 - `esphome.hcpbridge_go_to_vent`: To move the garage door to the vent position
 - `esphome.hcpbridge_go_to_open`: To open the garage door
+- `esphome.hcpbridge_toggle`: Send an Impulse command to the door
 
 # Project
 
