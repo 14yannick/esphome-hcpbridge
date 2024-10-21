@@ -55,12 +55,12 @@ binary_sensor:
         then:
           - light.toggle: light_1
   - platform: template
-    name: "relay state"
+    name: "Garage Door Relay state"
     id: sensor_relay
     lambda: !lambda |-
       return (id(garagedoor_cover).get_relay_state());
     #on_state:
-    #create your automation based on relay state  
+    #create your automation based on Garage Door Relay state  
 
 output:
   - platform: template
@@ -105,34 +105,34 @@ text_sensor:
       std::string stateText;
       switch (id(garagedoor_cover).get_cover_state()) {
           case HoermannState::OPENING:
-            stateText = "opening";
+            stateText = "Opening";
             break;
           case HoermannState::MOVE_VENTING:
-            stateText = "move venting";
+            stateText = "Move venting";
             break;
           case HoermannState::MOVE_HALF:
-            stateText = "move half";
+            stateText = "Move half";
             break;
           case HoermannState::CLOSING:
-            stateText = "closing";
+            stateText = "Closing";
             break;
           case HoermannState::OPEN:
-            stateText = "open";
+            stateText = "Open";
             break;
           case HoermannState::CLOSED:
-            stateText = "closed";
+            stateText = "Closed";
             break;
           case HoermannState::STOPPED:
-            stateText = "stopped";
+            stateText = "Stopped";
             break;
           case HoermannState::HALFOPEN:
-            stateText = "half open";
+            stateText = "Half open";
             break;
           case HoermannState::VENT:
-            stateText = "venting";
+            stateText = "Venting";
             break;
           default:
-            stateText = "unknown";
+            stateText = "Unknown";
             break;
         }
       return {stateText};
@@ -141,7 +141,7 @@ text_sensor:
 switch:
   - platform: template
     id: switch_vent
-    name: "Venting"
+    name: "Garage Door Venting"
     lambda: |-
       return (id(garagedoor_cover).get_cover_state() == HoermannState::VENT);
     optimistic: True

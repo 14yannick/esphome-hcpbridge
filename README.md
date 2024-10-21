@@ -70,12 +70,12 @@ binary_sensor:
         then:
           - light.toggle: light_1
   - platform: template
-    name: "relay state"
+    name: "Garage Door Relay state"
     id: sensor_relay
     lambda: !lambda |-
       return (id(garagedoor_cover).get_relay_state());
     #on_state:
-    #create your automation based on relay state  
+    #create your automation based on Garage Door Relay state  
 
 output:
   - platform: template
