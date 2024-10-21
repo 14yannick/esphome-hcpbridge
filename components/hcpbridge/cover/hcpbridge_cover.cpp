@@ -67,8 +67,11 @@ namespace esphome
         this->parent_->engine->impulseDoor();
       }
     }
-
-    void HCPBridgeCover::update()
+    void HCPBridgeCover::setup() {
+        ESP_LOGD(TAG, "HCPBridgeCover::setup() - setup method calleds");
+        this->parent_->add_on_state_callback([this]() { this->on_event_triggered(); });
+    }
+    void HCPBridgeCover::on_event_triggered()
     {
       if (!this->parent_->engine->state->valid)
       {

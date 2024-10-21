@@ -11,7 +11,7 @@ esphome:
     # board_build.f_flash: 40000000L
 
 external_components:
-    source: github://14yannick/esphome-hcpbridge
+    source: github://14yannick/esphome-hcpbridge@rc
     refresh: 0s
 
 esp32:
@@ -20,9 +20,7 @@ esp32:
     type: arduino
 
 hcpbridge:
-  is_connected:
-    name: "HCPBridge Connected"
-    id: hcpbridge_id
+  id: hcpbridge_id
   rx_pin: 18 # optional, default=18
   tx_pin: 17 # optional, default=17
   #rts_pin : 1 # optional RTS pin to use if hardware automatic control flow is not available.
@@ -34,55 +32,30 @@ cover:
     id: garagedoor_cover
 
 binary_sensor:
-  - platform: template
-    name: "Garage Door Light sensor"
-    internal: true 
-    device_class: light
-    id: sensor_light
-    lambda: !lambda |-
-      return (id(garagedoor_cover).get_light_state());
-    on_state:
-    #needed to correct the state fo the light  
-      if:
-        condition:
-          or:
-            - and:
-              - binary_sensor.is_on: sensor_light
-              - light.is_off: light_1
-            - and:
-              - binary_sensor.is_off: sensor_light
-              - light.is_on: light_1
-        then:
-          - light.toggle: light_1
-  - platform: template
-    name: "Garage Door Relay state"
-    id: sensor_relay
-    lambda: !lambda |-
-      return (id(garagedoor_cover).get_relay_state());
-    #on_state:
-    #create your automation based on Garage Door Relay state  
+  - platform: hcpbridge
+    is_connected:
+      name: "HCPBridge Connected"
+      id: sensor_connected
+    relay_state:
+      name: "Garage Door Relay state"
+      id: sensor_relay
+      #on_state:
+      #create your automation based on Garage Door Relay state
 
 output:
-  - platform: template
-    type: binary
+  - platform: hcpbridge
     id: output_light
-    write_action:
-      lambda: !lambda |-
-        id(garagedoor_cover).set_light_state(state);
 
 light:
-  - platform: binary
+  - platform: hcpbridge
+    id: gd_light
     output: output_light
-    id: light_1
     name: Garage Door Light
 
 button:
-  - platform: template
+  - platform: hcpbridge
     id: button_vent
     name: "Garage Door Vent"
-    on_press:
-      - lambda: |-
-          id(garagedoor_cover).on_go_to_vent();
   - platform: template
     id: button_impulse
     name: "Garage Door Impulse"
@@ -90,74 +63,15 @@ button:
       - cover.toggle: garagedoor_cover
 
 text_sensor:
-  - platform: template
+  - platform: hcpbridge
     id: sensor_templ_state
     name: "Garage Door State"
-    update_interval: 5s
-    filters:
-      - lambda: |-
-          static std::string last;
-          if (x == last)
-            return {};
-          last = x;
-          return x;
-    lambda: |-
-      std::string stateText;
-      switch (id(garagedoor_cover).get_cover_state()) {
-          case HoermannState::OPENING:
-            stateText = "Opening";
-            break;
-          case HoermannState::MOVE_VENTING:
-            stateText = "Move venting";
-            break;
-          case HoermannState::MOVE_HALF:
-            stateText = "Move half";
-            break;
-          case HoermannState::CLOSING:
-            stateText = "Closing";
-            break;
-          case HoermannState::OPEN:
-            stateText = "Open";
-            break;
-          case HoermannState::CLOSED:
-            stateText = "Closed";
-            break;
-          case HoermannState::STOPPED:
-            stateText = "Stopped";
-            break;
-          case HoermannState::HALFOPEN:
-            stateText = "Half open";
-            break;
-          case HoermannState::VENT:
-            stateText = "Venting";
-            break;
-          default:
-            stateText = "Unknown";
-            break;
-        }
-      return {stateText};
-
 
 switch:
-  - platform: template
+  - platform: hcpbridge
     id: switch_vent
-    name: "Garage Door Venting"
-    lambda: |-
-      return (id(garagedoor_cover).get_cover_state() == HoermannState::VENT);
-    optimistic: True
-    restore_mode: disabled #else it fires the action on start of the esp.
-    turn_on_action:
-      - lambda: |-
-          if (id(garagedoor_cover).get_cover_state() != HoermannState::VENT) {
-            id(garagedoor_cover).on_go_to_vent();
-          }
-    turn_off_action:
-      - if:
-          condition:
-            lambda :  |-
-              return (id(garagedoor_cover).position != COVER_CLOSED);
-          then:
-            - cover.close: garagedoor_cover
+    name: "Venting"
+    restore_mode: disabled
 
 api:
   encryption:
@@ -202,4 +116,3 @@ logger:
 ota:
   - platform: esphome
     safe_mode: true
-
