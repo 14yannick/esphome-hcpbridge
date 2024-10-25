@@ -1,5 +1,19 @@
+# Variables to change the name of the entities
+substitutions:
+  name: "hcpbridge"
+  friendly_name: "Garage Door"
+  connection_state: "${name} Connected"
+  relay_name: "${friendly_name} Relay state"
+  btn_vent: "${friendly_name} Vent" 
+  btn_half: "${friendly_name} Half" 
+  btn_impulse: "${friendly_name} Impulse" 
+  sen_txt: "${friendly_name} State" 
+  sw_vent: "${friendly_name} Venting" 
+  sw_half: "${friendly_name} Open Half" 
+
 esphome:
-  name: hcpbridge
+  name: "${name}"
+  friendly_name: "${friendly_name}"
   libraries:
     - emelianov/modbus-esp8266
   platformio_options:
@@ -11,7 +25,7 @@ esphome:
     # board_build.f_flash: 40000000L
 
 external_components:
-    source: github://14yannick/esphome-hcpbridge@rc
+    source: github://14yannick/esphome-hcpbridge
     refresh: 0s
 
 esp32:
@@ -27,17 +41,17 @@ hcpbridge:
 
 cover:
   - platform: hcpbridge
-    name: Garage Door
+    name: ${friendly_name}
     device_class: garage
     id: garagedoor_cover
 
 binary_sensor:
   - platform: hcpbridge
     is_connected:
-      name: "HCPBridge Connected"
+      name: "${connection_state}"
       id: sensor_connected
     relay_state:
-      name: "Garage Door Relay state"
+      name: "${relay_name}"
       id: sensor_relay
       #on_state:
       #create your automation based on Garage Door Relay state
@@ -50,28 +64,47 @@ light:
   - platform: hcpbridge
     id: gd_light
     output: output_light
-    name: Garage Door Light
+    name: ${light}
 
 button:
   - platform: hcpbridge
-    id: button_vent
-    name: "Garage Door Vent"
-  - platform: template
-    id: button_impulse
-    name: "Garage Door Impulse"
-    on_press:
-      - cover.toggle: garagedoor_cover
+    vent_button:
+      id: button_vent
+      name: "${btn_vent}"
+    impulse_button:
+      id: button_impulse
+      name: "${btn_impulse}"
+    half_button:
+      id: button_half
+      name: "${btn_half}"
 
 text_sensor:
   - platform: hcpbridge
     id: sensor_templ_state
-    name: "Garage Door State"
+    name: "${sen_txt}"
+#    filters:
+#      - substitute:
+#        - "Opening -> your text"
+#        - "Move venting -> your text"
+#        - "Move half -> your text"
+#        - "Closing -> your text"
+#        - "Open -> your text"
+#        - "Closed -> your text"
+#        - "Stopped -> your text"
+#        - "Half open -> your text"
+#        - "Venting -> your text"
+#        - "Unknown -> your text"
 
 switch:
   - platform: hcpbridge
-    id: switch_vent
-    name: "Venting"
-    restore_mode: disabled
+    vent_switch:
+      id: switch_vent
+      name: "${sw_vent}"
+      restore_mode: disabled
+    half_switch:
+      id: half_switch
+      name: "${sw_half}"
+      restore_mode: disabled
 
 api:
   encryption:
@@ -115,4 +148,3 @@ logger:
 # Example configuration entry
 ota:
   - platform: esphome
-    safe_mode: true

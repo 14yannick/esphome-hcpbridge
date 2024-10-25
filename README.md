@@ -13,8 +13,12 @@ This is a esphome-based adaption of the HCPBridge. Credits for the initial devel
 ### Example esphome configuration
 
 ```YAML
+substitutions:
+  name: "hcpbridge"
+  friendly_name: "Garage Door"
 esphome:
-  name: hcpbridge
+  name: "${name}"
+  friendly_name: "${friendly_name}"
   libraries:
     - emelianov/modbus-esp8266 # Required for communication with the modbus
   platformio_options:
@@ -42,10 +46,41 @@ hcpbridge:
 
 cover:
   - platform: hcpbridge
-    name: Garage Door
+    name: ${friendly_name}
     device_class: garage
     id: garagedoor_cover
+```
 
+### Home Assistant
+
+![Home Assistant Device Overview](docs/device_overview.png)
+
+### Cover
+
+The component provides a cover component to control the garage door.
+
+### Light
+
+The component provides a Light component to turn the light off and on.
+The Output is needed to control the light.
+```YAML
+output:
+  - platform: hcpbridge
+    id: output_light
+
+light:
+  - platform: hcpbridge
+    id: gd_light
+    output: output_light
+    name: Garage Door Light
+```
+### Binary_Sensor
+
+The component provides you two sensor.
+
+- `is_connected`: Who indicated if there is a valid connection with the door.
+- `relay_state`: Give the status of the option relay (Menu 30) of the HCP.
+```YAML
 binary_sensor:
   - platform: hcpbridge
     is_connected:
@@ -56,18 +91,61 @@ binary_sensor:
       id: sensor_relay
       #on_state:
       #create your automation based on Garage Door Relay state
+```
+### Text_sensor
 
-output:
+This component provide you a detailed current state of the door. This text can be changed using the substitute functionality.
+```YAML
+text_sensor:
   - platform: hcpbridge
-    id: output_light
+    id: sensor_templ_state
+    name: "Garage Door State"
+```
+### Button
 
-light:
+This component allows you to add three buttons to sond commands to the door.
+```YAML
+button:
   - platform: hcpbridge
-    id: gd_light
-    output: output_light
-    name: Garage Door Light
+    vent_button:
+      id: button_vent
+      name: "Garage Door Vent"
+    impulse_button:
+      id: button_impulse
+      name: "Garage Door Impulse"
+    half_button:
+      id: button_half
+      name: "Half"
+```
 
-# API to communicate with home assistant
+### Switch
+
+This component allows you to add two switch to sond commands to the door.
+```YAML
+switch:
+  - platform: hcpbridge
+    vent_switch:
+      id: switch_vent
+      name: "Venting"
+      restore_mode: disabled
+    half_switch:
+      id: half_switch
+      name: "Open Half"
+      restore_mode: disabled
+```
+
+### Services
+
+Additionally, when using the cover component, you can expose the following services to the API:
+
+- `esphome.hcpbridge_go_to_close`: To close the garage door
+- `esphome.hcpbridge_go_to_half`: To move the garage door to half position
+- `esphome.hcpbridge_go_to_vent`: To move the garage door to the vent position
+- `esphome.hcpbridge_go_to_open`: To open the garage door
+- `esphome.hcpbridge_toggle`: Send an Impulse command to the door
+
+There are in the YAML and not directly in the Cover to remove the API dependency there. This give the possibility to use the Cover without the API Component for exemple only with the web_server or mqtt.
+```YAML
 api:
   encryption:
     key: !secret api_key
@@ -91,69 +169,11 @@ api:
     - service: toggle
       then:
         - cover.toggle: garagedoor_cover
-
-# Enable OTA updates
-ota:
-  - platform: esphome
-    safe_mode: true
 ```
 
-### Home Assistant
+### Example YAML
 
-![Home Assistant Device Overview](docs/device_overview.png)
-
-### Cover
-
-The component provides a cover component to control the garage door.
-
-### Light
-
-The component provides a Light component to turn the light off and on.
-
-### Binary_Sensor
-
-The component provides you two sensor.
-
-- `is_connected`: Who indicated if there is a valid connection with the door.
-- `relay_state`: Give the status of the option relay (Menu 30) of the HCP.
-
-### Text_sensor
-
-This component provide you a detailed current state of the door. This text can be changed using the substitute functionality.
-```YAML
-text_sensor:
-  - platform: hcpbridge
-    id: sensor_templ_state
-    name: "Garage Door State"
-    filters:
-      - substitute:
-        - "Opening -> your text"
-        - "Move venting -> your text"
-        - "Move half -> your text"
-        - "Closing -> your text"
-        - "Open -> your text"
-        - "Closed -> your text"
-        - "Stopped -> your text"
-        - "Half open -> your text"
-        - "Venting -> your text"
-        - "Unknown -> your text"
-```
-
-### Additional Components
-
-There is also a simple button and switch component for convenience for Automation.
-Check out the [example_hcpbridge.yaml](./example_hcpbridge.yaml) for some implementations.
-
-
-### Services
-
-Additionally, when using the cover component, you can use the following services:
-
-- `esphome.hcpbridge_go_to_close`: To close the garage door
-- `esphome.hcpbridge_go_to_half`: To move the garage door to half position
-- `esphome.hcpbridge_go_to_vent`: To move the garage door to the vent position
-- `esphome.hcpbridge_go_to_open`: To open the garage door
-- `esphome.hcpbridge_toggle`: Send an Impulse command to the door
+Check out the [example_hcpbridge.yaml](./example_hcpbridge.yaml) for a complete yaml with all hcpbridge components.
 
 # Project
 
@@ -165,8 +185,8 @@ You can find more information on the project here: [Hörmann garage door via MQT
 
 - [x] Initial working version
 - [ ] Use esphome modbus component instead of own code
-- [ ] Map additional functions to esphome
-- [ ] Use callbacks instead of pollingComponent
+- [x] Map additional functions to esphome
+- [x] Use callbacks instead of pollingComponent (Only hcpbridge is polling)
 - [x] Expert options for the HCPBridge component (GPIOs ...)
 
 # Contribute

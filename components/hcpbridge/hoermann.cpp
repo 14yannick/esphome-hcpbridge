@@ -249,8 +249,6 @@ uint16_t HoermannGarageEngine::onRegSevenChanged(TRegister *reg, uint16_t val)
   //0x02 0x00 Relay on  - light off
   //0x02 0x10 Relay on  - light on
   //0x00 0x10 Relay off - light on
-
-  //below two code I'm not sure about the correct interpretation.
   //0x00 0x14 Relay on  - light on 
   //0x00 0x04 Relay on  - light off
 
@@ -263,10 +261,6 @@ uint16_t HoermannGarageEngine::onRegSevenChanged(TRegister *reg, uint16_t val)
   if ((reg->value & 0x00FF) != (val & 0x00FF))
   {
     ESP_LOGI(TAG_HCI, "onRegSixChanged. address=%x, value=%x", reg->address.address, val);
-    // 14 .. Internal light on External light on
-    // 10 .. Internal light on External light off
-    // 04 .. Internal light on External light off
-    // 00 .. Internal light off External light off
     this->state->setLigthOn((val & 0x00FF) == 0x14 || (val & 0x00FF) == 0x10);
     this->state->setRelayOn((val & 0xFF00) >> 8 == 0x02 || (val & 0x00FF) == 0x14 || (val & 0x00FF) == 0x04); 
   }
