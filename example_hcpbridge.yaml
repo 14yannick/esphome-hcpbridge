@@ -4,6 +4,7 @@ substitutions:
   friendly_name: "Garage Door"
   connection_state: "${name} Connected"
   relay_name: "${friendly_name} Relay state"
+  light: "${friendly_name} Light"
   btn_vent: "${friendly_name} Vent" 
   btn_half: "${friendly_name} Half" 
   btn_impulse: "${friendly_name} Impulse" 
