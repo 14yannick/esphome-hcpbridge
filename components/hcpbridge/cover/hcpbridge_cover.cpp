@@ -54,7 +54,7 @@ void HCPBridgeCover::control(const cover::CoverCall &call) {
 
 void HCPBridgeCover::setup() {
   ESP_LOGD(TAG, "HCPBridgeCover::setup() - setup method calleds");
-  this->parent_->add_prio_callback([this]() { this->on_event_triggered(); }, TAG);
+  this->parent_->add_on_state_callback([this]() { this->on_event_triggered(); }, TAG);
 }
 
 void HCPBridgeCover::on_event_triggered() {

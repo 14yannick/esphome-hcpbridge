@@ -20,11 +20,6 @@ esphome:
     - emelianov/modbus-esp8266
   platformio_options:
     board_build.f_cpu: 240000000L
-    board_build.flash_mode: qio
-    monitor_speed: 9600
-    monitor_filters: esp32_exception_decoder
-    lib_ldf_mode: deep+
-    # board_build.f_flash: 40000000L
 
 external_components:
   - source:
@@ -142,8 +137,7 @@ wifi:
 
 # Enable logging
 logger:
-  level: DEBUG
-  baud_rate: 9600
+  level: WARN
 
 # Example configuration entry
 ota:

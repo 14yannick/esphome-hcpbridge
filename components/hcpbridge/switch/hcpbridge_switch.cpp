@@ -4,11 +4,12 @@ namespace esphome {
 namespace hcpbridge {
 
 static const char *const TAG = "hcpbridge.switch";
+static const char *const TAG2 = "hcpbridge.switch2";
 
 // Implementation for HCPBridgeSwitchVent
 
 void HCPBridgeSwitchVent::setup() {
-    this->parent_->add_on_state_callback([this]() { this->on_event_triggered(); });
+    this->parent_->add_on_state_callback([this]() { this->on_event_triggered(); }, TAG);
 }
 
 void HCPBridgeSwitchVent::on_event_triggered() {
@@ -57,7 +58,7 @@ void HCPBridgeSwitchVent::write_state(bool state) {
 // Implementation for HCPBridgeSwitchHalf
 
 void HCPBridgeSwitchHalf::setup() {
-    this->parent_->add_on_state_callback([this]() { this->on_event_triggered(); });
+    this->parent_->add_on_state_callback([this]() { this->on_event_triggered(); }, TAG2);
 }
 
 void HCPBridgeSwitchHalf::on_event_triggered() {

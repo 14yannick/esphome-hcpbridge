@@ -14,7 +14,7 @@ light::LightTraits HCPBridgeLight::get_traits() {
 
 void HCPBridgeLight::setup() {
     ESP_LOGD(TAG, "HCPBridgeLight::setup() - setup method calleds");
-    this->parent_->add_on_state_callback([this]() { this->on_event_triggered(); });
+    this->parent_->add_on_state_callback([this]() { this->on_event_triggered(); }, TAG);
 }
 
 void HCPBridgeLight::write_state(light::LightState *state) {

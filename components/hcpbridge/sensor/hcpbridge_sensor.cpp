@@ -7,8 +7,7 @@ namespace hcpbridge {
 static const char *TAG = "hcpbridge.sensor";
 
 void HCPBridgeSensor::setup() {
-  this->parent_->add_on_state_callback(
-      [this]() { this->on_event_triggered(); });
+  this->parent_->add_on_state_callback([this]() { this->on_event_triggered(); }, TAG);
   this->update_state(0.0f);
 }
 

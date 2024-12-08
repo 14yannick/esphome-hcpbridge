@@ -7,9 +7,7 @@ static const char *const TAG = "hcpbridge.text_sensor";
 
 void HCPBridgeTextSensor::setup() {
   if (this->parent_ != nullptr) {
-    this->parent_->add_on_state_callback([this]() {
-        this->on_event_triggered(); 
-    });
+    this->parent_->add_on_state_callback([this]() { this->on_event_triggered(); }, TAG);
   }
 }
 

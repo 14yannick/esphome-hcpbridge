@@ -23,11 +23,6 @@ esphome:
     - emelianov/modbus-esp8266 # Required for communication with the modbus
   platformio_options:
     board_build.f_cpu: 240000000L
-    board_build.flash_mode: qio
-    monitor_speed: 9600
-    monitor_filters: esp32_exception_decoder
-    lib_ldf_mode: deep+
-    # board_build.f_flash: 40000000L
 
 external_components:
     source: github://14yannick/esphome-hcpbridge
@@ -189,6 +184,7 @@ Check out the [example_hcpbridge.yaml](./example_hcpbridge.yaml) for a complete 
 - HCPBridge from `Tysonpower` on an `Hörmann Promatic 4`
 
 You can find more information on the project here: [Hörmann garage door via MQTT](https://community.home-assistant.io/t/hormann-garage-door-via-mqtt/279938/340)
+Known working hardware are the ESP32 and S3 dual core chip.
 
 # ToDo
 

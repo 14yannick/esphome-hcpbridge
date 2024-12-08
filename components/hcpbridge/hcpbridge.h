@@ -18,7 +18,7 @@ class HCPBridge : public PollingComponent {
   void set_rx_pin(InternalGPIOPin *rx_pin) { this->rx_pin_ = rx_pin; }
   void set_rts_pin(InternalGPIOPin *rts_pin) { this->rts_pin_ = rts_pin; }
   HoermannGarageEngine *engine;
-  void add_on_state_callback(std::function<void()> &&callback);
+  void add_on_state_callback(std::function<void()> &&callback, const char *tag);
   void add_prio_callback(std::function<void()> &&callback, const char *tag);
 
  protected:
@@ -26,7 +26,6 @@ class HCPBridge : public PollingComponent {
   InternalGPIOPin *rx_pin_;
   InternalGPIOPin *rts_pin_;
   CallbackManager<void()> state_callback_;
-  CallbackManager<void()> prio_callback_;
 };
 }  // namespace hcpbridge
 }  // namespace esphome
