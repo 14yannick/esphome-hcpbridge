@@ -12,8 +12,7 @@ DEPENDENCIES = ['hcpbridge']
 HCPBridgeCover = hcpbridge_ns.class_("HCPBridgeCover", cover.Cover, cg.Component)
 
 CONFIG_SCHEMA = cv.All(
-  cover.cover_schema(HCPBridgeCover)
-  .extend({
+  cover.cover_schema(HCPBridgeCover).extend({
     cv.GenerateID(): cv.declare_id(HCPBridgeCover),
     cv.GenerateID(CONF_HCPBridge_ID): cv.use_id(HCPBridge),
   }),
